@@ -1,7 +1,7 @@
 import pino from 'pino';
 import { PgHelper } from '../util/pg-helper';
 import { Queue } from 'bullmq';
-import { NORMALIZE_TITLE_JOB_NAME } from '../config';
+import { NORMALIZE_TITLE_JOB_NAME, SUPPORTED_TITLE_TYPES } from '../config';
 
 export type FindTitlesServiceProps = {
   logger: pino.Logger;
@@ -21,13 +21,14 @@ export class FindTitlesService {
   }
 
   async execute(): Promise<void> {
-    this.logger.info('findind titles to normalize');
+    const types = SUPPORTED_TITLE_TYPES;
     const limit = 500;
     let offset = 0;
     let hasMore = false;
     let count = 0;
+    this.logger.info(`findind titles to normalize with types: ${types.join(', ')}`);
     do {
-      const rows = await this.getRawTitles(offset, limit);
+      const rows = await this.getRawTitles(offset, limit, SUPPORTED_TITLE_TYPES);
       hasMore = rows.length > 0;
       if (hasMore) {
         await this.queue.addBulk(
@@ -43,14 +44,14 @@ export class FindTitlesService {
         count += rows.length;
       }
     } while (hasMore);
-    this.logger.info(`${count} titles founded to normalize`);
+    this.logger.info(`${count} titles founded to normalize with types: ${types.join(', ')}`);
   }
 
-  private async getRawTitles(offset: number, limit: number) {
+  private async getRawTitles(offset: number, limit: number, titleTypes: string[]) {
     const rows = await this.pg.query(`
       SELECT tconst
       FROM title_basics 
-      WHERE titletype in ('movie', 'tvSeries', 'tvMiniSeries') 
+      WHERE title_type in (${titleTypes.map((titleType) => `'${titleType}'`).join(',')})
       ORDER BY tconst DESC
       OFFSET ${offset} LIMIT ${limit}
     `);

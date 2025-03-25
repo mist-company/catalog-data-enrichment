@@ -1,8 +1,11 @@
 import pino from 'pino';
 import { PgHelper } from '../util/pg-helper';
 import { MongoHelper } from '../util/mongo-helper';
+import { ENRICH_TITLE_JOB_NAME } from '../config';
+import { Queue } from 'bullmq';
 
 export type NormalizeTitlesServiceProps = {
+  queue: Queue;
   logger: pino.Logger;
   pg: PgHelper;
   mongo: MongoHelper;
@@ -10,11 +13,13 @@ export type NormalizeTitlesServiceProps = {
 
 export class NormalizeTitlesService {
   private readonly logger: pino.Logger;
+  private readonly queue: Queue;
   private readonly pg: PgHelper;
   private readonly mongo: MongoHelper;
 
-  constructor({ logger, pg, mongo }: NormalizeTitlesServiceProps) {
+  constructor({ logger, queue, pg, mongo }: NormalizeTitlesServiceProps) {
     this.logger = logger.child({ service: NormalizeTitlesService.name });
+    this.queue = queue;
     this.pg = pg;
     this.mongo = mongo;
   }
@@ -32,6 +37,7 @@ export class NormalizeTitlesService {
       Object.assign(title, { seasons });
     }
     await collection.updateOne({ imdbId: title.imdbId }, { $set: title }, { upsert: true });
+    await this.queue.add(ENRICH_TITLE_JOB_NAME, { imdbId: title.imdbId });
     this.logger.info(`${imdbId} title normalization completed`);
   }
 
