@@ -20,8 +20,6 @@
     "express": "^4.21.2",
     "fast-csv": "^5.0.2",
     "mongodb": "^6.15.0",
-    "pg": "^8.13.3",
-    "pg-copy-streams": "^6.0.6",
     "pino": "^9.6.0"
   },
   "devDependencies": {
@@ -29,8 +27,6 @@
     "@tsconfig/node-lts": "^22.0.1",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.4",
-    "@types/pg": "^8.11.11",
-    "@types/pg-copy-streams": "^1.2.5",
     "dotenv": "^16.4.7",
     "eslint": "^9.22.0",
     "globals": "^16.0.0",
