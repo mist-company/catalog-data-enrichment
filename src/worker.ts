@@ -11,8 +11,11 @@ export const worker = new Worker(
   CATALOG_ENRICHMENT_QUEUE_NAME,
   async (job: Job) => {
     if (job.name === FIND_TORRENT_JOB_NAME) {
-      await findTorrentsService.execute({ imdbId: job.data.imdbId });
-      return;
+      const torrents = await findTorrentsService.execute({ imdbId: job.data.imdbId });
+      return torrents.map((torrent) => ({
+        infoHash: torrent.infoHash,
+        title: torrent.title,
+      }));
     }
     logger.error(`unknown job name: ${job.name}`);
   },
