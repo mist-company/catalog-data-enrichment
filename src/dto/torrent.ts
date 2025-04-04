@@ -1,6 +1,6 @@
 export type Torrent = {
   imdbId?: string;
-  tracker?: string;
+  tracker: string;
   title: string;
   magnetUri: string;
   infoHash: string;
