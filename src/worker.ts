@@ -6,7 +6,7 @@ import {
 } from './config';
 import { FindTorrentsUseCase } from './use-case/find-torrents.use-case';
 import { dependencies } from './dependencies';
-import { LoggerHelper } from './helper/logger-helper';
+import { LoggerHelper } from './helper/logger.helper';
 
 const logger = dependencies.resolve(LoggerHelper);
 const searchTorrentsUseCase = dependencies.resolve(FindTorrentsUseCase);

@@ -1,10 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { Title } from '../../dto/title';
-import { DatabaseHelper } from '../../helper/database-helper';
-import {
-  BaseTitleGateway,
-  BaseTitleGatewayGetInput,
-} from './base-title.gateway';
+import { DatabaseHelper } from '../../helper/database.helper';
+import { BaseTitleGateway, BaseTitleGatewayGetInput } from './base-title.gateway';
 
 @injectable()
 export class DatabaseTitleGateway implements BaseTitleGateway {
@@ -16,7 +13,7 @@ export class DatabaseTitleGateway implements BaseTitleGateway {
 
   async get({ imdbId }: BaseTitleGatewayGetInput): Promise<Title | null> {
     const collection = await this.#database.getCollection('titles');
-    const title = await collection.findOne<Title>({ _id: imdbId as unknown });
+    const title = await collection.findOne<Title>({ _id: imdbId.id as unknown });
     return title ?? null;
   }
 }

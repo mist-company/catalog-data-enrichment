@@ -6,7 +6,7 @@ import { FindTorrentsUseCase } from './use-case/find-torrents.use-case';
 import { dependencies } from './dependencies';
 import { CATALOG_ENRICHMENT_QUEUE_NAME } from './config';
 import { Queue } from 'bullmq';
-import { LoggerHelper } from './helper/logger-helper';
+import { LoggerHelper } from './helper/logger.helper';
 
 const bullBoardExpressAdapter = new ExpressAdapter().setBasePath('/ui');
 

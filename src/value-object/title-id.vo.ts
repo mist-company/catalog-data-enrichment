@@ -24,6 +24,19 @@ export class TitleIdValueObject {
     return this.#episode;
   }
 
+  toJSON(): object {
+    return {
+      id: this.#id,
+      season: this.#season,
+      episode: this.#episode,
+      fullId: this.#fullId,
+    };
+  }
+
+  isEqual(other: TitleIdValueObject): boolean {
+    return this.#id === other.id;
+  }
+
   toString(): string {
     return this.#fullId;
   }

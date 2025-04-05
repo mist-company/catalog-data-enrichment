@@ -1,6 +1,6 @@
 import { inject, injectable } from 'tsyringe';
 import { Torrent } from '../../dto/torrent';
-import { DatabaseHelper } from '../../helper/database-helper';
+import { DatabaseHelper } from '../../helper/database.helper';
 
 @injectable()
 export class DatabaseTorrentGateway {
@@ -14,7 +14,7 @@ export class DatabaseTorrentGateway {
     const collection = await this.#database.getCollection('torrents');
     await collection.updateOne(
       { infoHash: torrent.infoHash },
-      { $set: { ...torrent } },
+      { $set: { ...torrent, imdbId: torrent.imdbId.toString() } },
       options,
     );
   }

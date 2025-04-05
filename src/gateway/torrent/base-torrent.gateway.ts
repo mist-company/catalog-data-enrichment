@@ -5,20 +5,15 @@ export type BaseTorrentGatewayUpdateOptions = {
 };
 
 export interface BaseTorrentGateway {
-  update(
-    torrent: Torrent,
-    options?: BaseTorrentGatewayUpdateOptions,
-  ): Promise<void>;
+  update(torrent: Torrent, options?: BaseTorrentGatewayUpdateOptions): Promise<void>;
 }
 
 export enum BaseSearchableTorrentGatewayGategory {
   MOVIE = 'MOVIE',
   TV_SERIES = 'TV_SERIES',
+  UNKNOWN = 'UNKNOWN',
 }
 
 export interface BaseSearchableTorrentGateway {
-  search(
-    query: string,
-    category: BaseSearchableTorrentGatewayGategory,
-  ): Promise<Torrent[]>;
+  search(query: string, category: BaseSearchableTorrentGatewayGategory): Promise<Torrent[]>;
 }

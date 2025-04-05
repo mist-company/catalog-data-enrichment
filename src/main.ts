@@ -4,7 +4,7 @@ import { PORT, WORKER_CONCURRENCY } from './config';
 import { worker } from './worker';
 import server from './server';
 import { dependencies } from './dependencies';
-import { LoggerHelper } from './helper/logger-helper';
+import { LoggerHelper } from './helper/logger.helper';
 
 (async () => {
   const logger = dependencies.resolve(LoggerHelper);

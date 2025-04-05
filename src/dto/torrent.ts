@@ -1,5 +1,7 @@
+import { TitleIdValueObject } from '../value-object/title-id.vo';
+
 export type Torrent = {
-  imdbId?: string;
+  imdbId?: TitleIdValueObject;
   tracker: string;
   title: string;
   magnetUri: string;

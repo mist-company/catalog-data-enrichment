@@ -1,7 +1,10 @@
 import { injectable } from 'tsyringe';
 import { JACKETT_URL } from '../../config';
 import type { Torrent } from '../../dto/torrent';
-import type { BaseSearchableTorrentGateway, BaseSearchableTorrentGatewayGategory } from './base-torrent.gateway';
+import type {
+  BaseSearchableTorrentGateway,
+  BaseSearchableTorrentGatewayGategory,
+} from './base-torrent.gateway';
 
 type JackettResponseItem = {
   Title: string;
@@ -17,6 +20,7 @@ type JackettResponseItem = {
 @injectable()
 export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
   readonly #categories: Record<string, string> = {
+    UNKNOWN: '',
     MOVIE: '2000',
     TV_SERIES: '5000',
   };
