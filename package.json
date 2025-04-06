@@ -1,6 +1,6 @@
 {
   "name": "catalog-data-enrichment",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "main": "dist/main.ts",
   "scripts": {
     "start:dev": "nodemon -r dotenv/config --exec ts-node src/main.ts | pino-pretty",
