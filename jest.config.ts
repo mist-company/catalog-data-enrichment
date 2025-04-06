@@ -16,6 +16,7 @@ const config: Config = {
     '^.+.tsx?$': ['ts-jest', {}],
   },
   setupFiles: ['<rootDir>/src/test-setup.ts'],
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/dist/', '<rootDir>/coverage/'],
 };
 
 export default config;

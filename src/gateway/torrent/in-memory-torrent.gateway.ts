@@ -1,5 +1,4 @@
 import { Torrent } from '../../dto/torrent';
-import { TitleIdValueObject } from '../../value-object/title-id.vo';
 import {
   BaseSearchableTorrentGateway,
   BaseSearchableTorrentGatewayGategory,
@@ -33,9 +32,8 @@ export class InMemoryTorrentGateway implements BaseTorrentGateway, BaseSearchabl
         if (category === BaseSearchableTorrentGatewayGategory.UNKNOWN) {
           return true;
         }
-        const titleId = new TitleIdValueObject(torrent.imdbId);
         const titleCategory =
-          !!titleId.season && !!titleId.episode
+          !!torrent.imdbId.season && !!torrent.imdbId.episode
             ? BaseSearchableTorrentGatewayGategory.TV_SERIES
             : BaseSearchableTorrentGatewayGategory.MOVIE;
         return titleCategory === category;
