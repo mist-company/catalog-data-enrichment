@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/strmplus/catalog-data-enrichment/compare/v0.1.1...v0.1.2) (2025-04-06)
+
+
+### 🚚 Chores
+
+* add jest ([ffcccd6](https://github.com/strmplus/catalog-data-enrichment/commit/ffcccd66b5170f1069e1b779d82cebcc737ceeda))
+
+
+### ✅ Testing
+
+* some components ([87361bd](https://github.com/strmplus/catalog-data-enrichment/commit/87361bd4f2143a240856ff86662ae09edb4617d2))
+
 ### 0.1.1 (2025-04-05)
 
 
