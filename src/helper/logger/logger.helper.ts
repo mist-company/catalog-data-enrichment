@@ -1,15 +1,14 @@
 /* eslint-disable prefer-spread */
 import pino from 'pino';
-import { LOG_LEVEL } from '../config';
+import { LOG_LEVEL } from '../../config';
 import { inject, injectable } from 'tsyringe';
-
-type LoggerArgs = [string, object] | [object, string] | [object] | [string];
+import { BaseLoggerHelper, LoggerArgs, LoggerHelperMeta } from './base-logger.helper';
 
 @injectable()
-export class LoggerHelper {
+export class LoggerHelper implements BaseLoggerHelper {
   readonly #logger: pino.Logger;
 
-  constructor(@inject('LoggerMeta') meta?: object) {
+  constructor(@inject(LoggerHelperMeta) meta?: LoggerHelperMeta) {
     this.#logger = pino({
       name: 'catalog-data-enrichment',
       level: LOG_LEVEL,
@@ -28,7 +27,7 @@ export class LoggerHelper {
     this.#logger.debug.apply(this.#logger, args);
   }
 
-  child(meta?: object): LoggerHelper {
+  child(meta?: LoggerHelperMeta): LoggerHelper {
     return new LoggerHelper({ ...meta });
   }
 }

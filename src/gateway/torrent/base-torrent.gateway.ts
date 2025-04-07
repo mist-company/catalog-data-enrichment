@@ -17,3 +17,6 @@ export enum BaseSearchableTorrentGatewayGategory {
 export interface BaseSearchableTorrentGateway {
   search(query: string, category: BaseSearchableTorrentGatewayGategory): Promise<Torrent[]>;
 }
+
+export const BaseTorrentGateway = Symbol.for('BaseTorrentGateway');
+export const BaseSearchableTorrentGateway = Symbol.for('BaseSearchableTorrentGateway');

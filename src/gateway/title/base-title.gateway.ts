@@ -8,3 +8,5 @@ export type BaseTitleGatewayGetInput = {
 export interface BaseTitleGateway {
   get(input: BaseTitleGatewayGetInput): Promise<Title | null>;
 }
+
+export const BaseTitleGateway = Symbol.for('BaseTitleGateway');

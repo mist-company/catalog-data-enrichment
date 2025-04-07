@@ -1,14 +1,14 @@
 import type { Torrent } from '../dto/torrent';
 import type { Title } from '../dto/title';
 import {
-  type BaseSearchableTorrentGateway,
-  type BaseTorrentGateway,
+  BaseSearchableTorrentGateway,
   BaseSearchableTorrentGatewayGategory,
+  BaseTorrentGateway,
 } from '../gateway/torrent/base-torrent.gateway';
-import type { BaseTitleGateway } from '../gateway/title/base-title.gateway';
+import { BaseTitleGateway } from '../gateway/title/base-title.gateway';
 import { TitleIdValueObject } from '../value-object/title-id.vo';
 import { inject, injectable } from 'tsyringe';
-import { LoggerHelper } from '../helper/logger.helper';
+import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
 
 export type FindTorrentsUseCaseInput = {
   imdbId: string;
@@ -16,48 +16,48 @@ export type FindTorrentsUseCaseInput = {
 
 @injectable()
 export class FindTorrentsUseCase {
-  readonly #logger: LoggerHelper;
+  readonly #logger: BaseLoggerHelper;
   readonly #torrentGateway: BaseTorrentGateway;
   readonly #searchableTorrentGateway: BaseSearchableTorrentGateway;
   readonly #titleGateway: BaseTitleGateway;
 
   constructor(
-    @inject('LoggerHelper') logger: LoggerHelper,
-    @inject('TitleGateway') titleGateway: BaseTitleGateway,
-    @inject('TorrentGateway') torrentGateway: BaseTorrentGateway,
-    @inject('SearchableTorrentGateway')
+    @inject(BaseLoggerHelper) logger: BaseLoggerHelper,
+    @inject(BaseTitleGateway) titleGateway: BaseTitleGateway,
+    @inject(BaseTorrentGateway) torrentGateway: BaseTorrentGateway,
+    @inject(BaseSearchableTorrentGateway)
     searchableTorrentGateway: BaseSearchableTorrentGateway,
   ) {
     this.#titleGateway = titleGateway;
     this.#torrentGateway = torrentGateway;
     this.#searchableTorrentGateway = searchableTorrentGateway;
-    this.#logger = logger.child({ service: FindTorrentsUseCase.name });
+    this.#logger = logger.child({ component: FindTorrentsUseCase.name });
   }
 
   async execute(input: FindTorrentsUseCaseInput): Promise<Torrent[]> {
     const imdbId = new TitleIdValueObject(input.imdbId);
-    this.#logger.debug({ imdbId }, 'search torrents');
+    const loggerPayload = { imdbId: imdbId.toString() };
+    this.#logger.info(loggerPayload, 'search torrents');
     const title = await this.#titleGateway.get({ imdbId: imdbId });
     if (!title) {
-      this.#logger.info({ imdbId }, 'title not found');
+      this.#logger.info(loggerPayload, 'title not found');
       return [];
     }
     const query = this.buildQuery(title, imdbId.season, imdbId.episode);
     const category = this.buildCategory(title.titleType);
+    Object.assign(loggerPayload, { query, category });
     const torrents = await this.#searchableTorrentGateway.search(query, category);
     if (!torrents.length) {
-      this.#logger.info({ imdbId, query, category }, 'no torrents found');
+      this.#logger.info(loggerPayload, 'no torrents found');
       return [];
     }
+    Object.assign(loggerPayload, { torrents: torrents.map((torrent) => torrent.infoHash) });
     await Promise.all(
       torrents.map((torrent) =>
-        this.#torrentGateway.update({ ...torrent, imdbId: imdbId }, { upsert: true }),
+        this.#torrentGateway.update({ ...torrent, imdbId }, { upsert: true }),
       ),
     );
-    this.#logger.info(
-      { imdbId, torrents: torrents.map((torrent) => torrent.infoHash) },
-      'torrents found',
-    );
+    this.#logger.info(loggerPayload, 'torrents results');
     return torrents;
   }
 
@@ -69,12 +69,9 @@ export class FindTorrentsUseCase {
   }
 
   private buildCategory(titleType: string): BaseSearchableTorrentGatewayGategory {
-    if (['movie'].includes(titleType)) {
-      return BaseSearchableTorrentGatewayGategory.MOVIE;
-    }
-    if (['tvSeries'].includes(titleType)) {
+    if (['tvSeries', 'tvMiniSeries'].includes(titleType)) {
       return BaseSearchableTorrentGatewayGategory.TV_SERIES;
     }
-    return BaseSearchableTorrentGatewayGategory.UNKNOWN;
+    return BaseSearchableTorrentGatewayGategory.MOVIE;
   }
 }

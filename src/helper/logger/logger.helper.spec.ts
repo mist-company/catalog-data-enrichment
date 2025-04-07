@@ -16,7 +16,7 @@ jest.mock('pino', () => {
   });
 });
 
-jest.mock('../config', () => ({
+jest.mock('../../config', () => ({
   LOG_LEVEL: 'some-log-level',
 }));
 
@@ -30,7 +30,7 @@ describe('LoggerHelper', () => {
   });
 
   it('calls child method with meta', () => {
-    const meta = { foo: 'bar' };
+    const meta = { component: 'foo' };
     new LoggerHelper(meta);
     expect(childMock).toHaveBeenCalledWith(meta);
   });
@@ -87,8 +87,8 @@ describe('LoggerHelper', () => {
 
   it('calls child method', () => {
     const logger = new LoggerHelper();
-    const childLogger = logger.child({ foo: 'bar' });
-    expect(childMock).toHaveBeenCalledWith({ foo: 'bar' });
+    const childLogger = logger.child({ component: 'bar' });
+    expect(childMock).toHaveBeenCalledWith({ component: 'bar' });
     expect(childLogger).toBeInstanceOf(LoggerHelper);
   });
 

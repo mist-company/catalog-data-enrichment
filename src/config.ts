@@ -8,4 +8,4 @@ export const JACKETT_API_KEY = process.env.JACKETT_API_KEY;
 export const FIND_TORRENT_JOB_NAME = process.env.FIND_TORRENT_JOB_NAME ?? 'find-torrent-job-local';
 export const CATALOG_ENRICHMENT_QUEUE_NAME =
   process.env.CATALOG_ENRICHMENT_QUEUE_NAME ?? 'catalog-enrichment-queue-local';
-export const WORKER_CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY ?? '100', 10);
+export const WORKER_CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY ?? '300', 10);

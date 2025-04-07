@@ -4,6 +4,12 @@ import { InMemoryTorrentGateway } from '../gateway/torrent/in-memory-torrent.gat
 import { InMemoryTitleGateway } from '../gateway/title/in-memory-title.gateway';
 import { Title } from '../dto/title';
 import { TitleIdValueObject } from '../value-object/title-id.vo';
+import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
+import { BaseTitleGateway } from '../gateway/title/base-title.gateway';
+import {
+  BaseSearchableTorrentGateway,
+  BaseTorrentGateway,
+} from '../gateway/torrent/base-torrent.gateway';
 
 function makeSut() {
   const logger = { child: jest.fn(), debug: jest.fn(), info: jest.fn() };
@@ -11,10 +17,10 @@ function makeSut() {
   const titleGateway = new InMemoryTitleGateway();
   const torrentGateway = new InMemoryTorrentGateway();
   const sut = container
-    .register('LoggerHelper', { useValue: logger })
-    .register('TitleGateway', { useValue: titleGateway })
-    .register('TorrentGateway', { useValue: torrentGateway })
-    .register('SearchableTorrentGateway', { useValue: torrentGateway })
+    .register(BaseLoggerHelper, { useValue: logger })
+    .register(BaseTitleGateway, { useValue: titleGateway })
+    .register(BaseTorrentGateway, { useValue: torrentGateway })
+    .register(BaseSearchableTorrentGateway, { useValue: torrentGateway })
     .resolve(FindTorrentsUseCase);
   return { sut, logger, titleGateway, torrentGateway };
 }

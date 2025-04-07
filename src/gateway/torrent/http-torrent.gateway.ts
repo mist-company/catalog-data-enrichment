@@ -1,10 +1,12 @@
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { JACKETT_URL } from '../../config';
 import type { Torrent } from '../../dto/torrent';
-import type {
+import {
   BaseSearchableTorrentGateway,
   BaseSearchableTorrentGatewayGategory,
 } from './base-torrent.gateway';
+import { LoggerHelper } from '../../helper/logger/logger.helper';
+import { BaseLoggerHelper } from '../../helper/logger/base-logger.helper';
 
 type JackettResponseItem = {
   Title: string;
@@ -19,19 +21,34 @@ type JackettResponseItem = {
 
 @injectable()
 export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
+  readonly #logger: LoggerHelper;
   readonly #categories: Record<string, string> = {
-    UNKNOWN: '',
     MOVIE: '2000',
     TV_SERIES: '5000',
   };
 
+  constructor(@inject(BaseLoggerHelper) logger: LoggerHelper) {
+    this.#logger = logger.child({ component: HttpTorrentGateway.name });
+  }
+
   async search(query: string, category: BaseSearchableTorrentGatewayGategory): Promise<Torrent[]> {
     const jackettUrl = this.buildJackettUrl();
     jackettUrl.searchParams.append('query', query);
-    jackettUrl.searchParams.append('category', this.#categories[category]);
+    if (category !== BaseSearchableTorrentGatewayGategory.UNKNOWN) {
+      jackettUrl.searchParams.append('category', this.#categories[category]);
+    }
     const res = await fetch(jackettUrl);
     const { Results: data }: { Results?: JackettResponseItem[] } = await res.json();
-    return this.mapJackettResponse(data);
+    const torrents = this.mapJackettResponse(data);
+    this.#logger.debug(
+      {
+        query,
+        category,
+        torrents: torrents.map((t) => t.infoHash),
+      },
+      'search torrent results',
+    );
+    return torrents;
   }
 
   private buildJackettUrl(): URL {
