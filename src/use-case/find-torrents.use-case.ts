@@ -10,6 +10,7 @@ import { inject, injectable } from 'tsyringe';
 import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
 import { TorrentHelper } from '../helper/torrent.helper';
 import { TextHelper } from '../helper/text.helper';
+import { SIMILARITY_THRESHOLD } from '../config';
 
 export type FindTorrentsUseCaseInput = {
   imdbId: string;
@@ -54,15 +55,18 @@ export class FindTorrentsUseCase {
         queries.map((query) => this.#searchableTorrentGateway.search(query, category)),
       )
     ).flat();
+    torrents = torrents
+      .map((torrent) => ({
+        ...torrent,
+        imdbId,
+        similarityScore: this.calcSimilarity(torrent, queries),
+      }))
+      .filter((torrent) => torrent.similarityScore >= SIMILARITY_THRESHOLD);
+
     if (!torrents.length) {
       this.#logger.info(loggerPayload, 'no torrents found');
       return [];
     }
-    torrents = torrents.map((torrent) => ({
-      ...torrent,
-      imdbId,
-      similarityScore: this.calcSimilarity(torrent, queries),
-    }));
     Object.assign(loggerPayload, { torrents: torrents.length });
     await Promise.all(
       torrents.map((torrent) => this.#torrentGateway.update({ ...torrent }, { upsert: true })),
