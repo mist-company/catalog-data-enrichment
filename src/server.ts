@@ -7,6 +7,7 @@ import { dependencies } from './dependencies';
 import { CATALOG_ENRICHMENT_QUEUE_NAME } from './config';
 import { Queue } from 'bullmq';
 import { LoggerHelper } from './helper/logger/logger.helper';
+import { ValidationError } from './errors/validation-error';
 
 const bullBoardExpressAdapter = new ExpressAdapter().setBasePath('/ui');
 
@@ -32,6 +33,10 @@ app.get('/api/torrents/:imdbId', async (req: Request, res: Response) => {
     });
     res.json(torrents);
   } catch (err) {
+    if (err instanceof ValidationError) {
+      logger.info({ err }, 'validation error');
+      return void res.status(400).json({ error: err.message });
+    }
     logger.error({ err }, 'error fetching torrents');
     res.status(500).json({ error: 'internal Server Error' });
   }

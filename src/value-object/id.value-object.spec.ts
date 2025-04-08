@@ -1,8 +1,8 @@
-import { TitleIdValueObject } from './title-id.vo';
+import { IdValueObject } from './id.value-object';
 
-describe('TitleIdValueObject', () => {
+describe('IdValueObject', () => {
   it('desconstructs if is a serie id', () => {
-    const titleId = new TitleIdValueObject('tt000000:1:2');
+    const titleId = new IdValueObject('tt000000:1:2');
     expect(titleId.id).toBe('tt000000');
     expect(titleId.season).toBe('01');
     expect(titleId.episode).toBe('02');
@@ -10,7 +10,7 @@ describe('TitleIdValueObject', () => {
   });
 
   it('desconstructs if is a serie id with two digits', () => {
-    const titleId = new TitleIdValueObject('tt000000:01:02');
+    const titleId = new IdValueObject('tt000000:01:02');
     expect(titleId.id).toBe('tt000000');
     expect(titleId.season).toBe('01');
     expect(titleId.episode).toBe('02');
@@ -18,7 +18,7 @@ describe('TitleIdValueObject', () => {
   });
 
   it('desconstructs if is a serie id with three digits', () => {
-    const titleId = new TitleIdValueObject('tt000000:001:002');
+    const titleId = new IdValueObject('tt000000:001:002');
     expect(titleId.id).toBe('tt000000');
     expect(titleId.season).toBe('001');
     expect(titleId.episode).toBe('002');
@@ -26,7 +26,7 @@ describe('TitleIdValueObject', () => {
   });
 
   it('does not desconstruct if is a movie id', () => {
-    const titleId = new TitleIdValueObject('tt000000');
+    const titleId = new IdValueObject('tt000000');
     expect(titleId.id).toBe('tt000000');
     expect(titleId.season).toBeUndefined();
     expect(titleId.episode).toBeUndefined();
@@ -34,9 +34,9 @@ describe('TitleIdValueObject', () => {
   });
 
   it('compares two title ids', () => {
-    const titleId1 = new TitleIdValueObject('tt000001:1:2');
-    const titleId2 = new TitleIdValueObject('tt000002:1:2');
-    const titleId3 = new TitleIdValueObject('tt000003:1:2');
+    const titleId1 = new IdValueObject('tt000001:1:2');
+    const titleId2 = new IdValueObject('tt000002:1:2');
+    const titleId3 = new IdValueObject('tt000003:1:2');
     expect(titleId1.isEqual(titleId1)).toBe(true);
     expect(titleId1.isEqual(titleId2)).toBe(false);
     expect(titleId1.isEqual(titleId3)).toBe(false);

@@ -1,8 +1,8 @@
 import { Title } from '../../dto/title';
-import { TitleIdValueObject } from '../../value-object/title-id.vo';
+import { IdValueObject } from '../../value-object/id.value-object';
 
 export type BaseTitleGatewayGetInput = {
-  imdbId: TitleIdValueObject;
+  imdbId: IdValueObject;
 };
 
 export interface BaseTitleGateway {

@@ -1,14 +1,14 @@
 import type { Torrent } from '../dto/torrent';
-import type { Title } from '../dto/title';
 import {
   BaseSearchableTorrentGateway,
   BaseSearchableTorrentGatewayGategory,
   BaseTorrentGateway,
 } from '../gateway/torrent/base-torrent.gateway';
 import { BaseTitleGateway } from '../gateway/title/base-title.gateway';
-import { TitleIdValueObject } from '../value-object/title-id.vo';
+import { IdValueObject } from '../value-object/id.value-object';
 import { inject, injectable } from 'tsyringe';
 import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
+import { TorrentHelper } from '../helper/torrent.helper';
 
 export type FindTorrentsUseCaseInput = {
   imdbId: string;
@@ -35,23 +35,29 @@ export class FindTorrentsUseCase {
   }
 
   async execute(input: FindTorrentsUseCaseInput): Promise<Torrent[]> {
-    const imdbId = new TitleIdValueObject(input.imdbId);
+    const imdbId = new IdValueObject(input.imdbId);
     const loggerPayload = { imdbId: imdbId.toString() };
-    this.#logger.info(loggerPayload, 'search torrents');
-    const title = await this.#titleGateway.get({ imdbId: imdbId });
+    // the line below remove the composed id to get the title
+    const title = await this.#titleGateway.get({ imdbId: new IdValueObject(imdbId.id) });
     if (!title) {
       this.#logger.info(loggerPayload, 'title not found');
       return [];
     }
-    const query = this.buildQuery(title, imdbId.season, imdbId.episode);
+    const episode = imdbId.isComposed() ? await this.#titleGateway.get({ imdbId }) : null;
+    const queries = TorrentHelper.buildQueriesFromTitle(title, episode);
     const category = this.buildCategory(title.titleType);
-    Object.assign(loggerPayload, { query, category });
-    const torrents = await this.#searchableTorrentGateway.search(query, category);
+    Object.assign(loggerPayload, { queries, category });
+    this.#logger.info(loggerPayload, 'search torrents');
+    const torrents = (
+      await Promise.all(
+        queries.map((query) => this.#searchableTorrentGateway.search(query, category)),
+      )
+    ).flat();
     if (!torrents.length) {
       this.#logger.info(loggerPayload, 'no torrents found');
       return [];
     }
-    Object.assign(loggerPayload, { torrents: torrents.map((torrent) => torrent.infoHash) });
+    Object.assign(loggerPayload, { torrents: torrents.length });
     await Promise.all(
       torrents.map((torrent) =>
         this.#torrentGateway.update({ ...torrent, imdbId }, { upsert: true }),
@@ -59,13 +65,6 @@ export class FindTorrentsUseCase {
     );
     this.#logger.info(loggerPayload, 'torrents results');
     return torrents;
-  }
-
-  private buildQuery(title: Title, season: string, episode: string): string {
-    if (season && episode) {
-      return `${title.primaryTitle} S${season} E${episode}`;
-    }
-    return `${title.primaryTitle} ${title.startYear}`;
   }
 
   private buildCategory(titleType: string): BaseSearchableTorrentGatewayGategory {

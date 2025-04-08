@@ -1,4 +1,4 @@
-export class TitleIdValueObject {
+export class IdValueObject {
   readonly #id: string;
   readonly #season: string;
   readonly #episode: string;
@@ -33,8 +33,12 @@ export class TitleIdValueObject {
     };
   }
 
-  isEqual(other: TitleIdValueObject): boolean {
+  isEqual(other: IdValueObject): boolean {
     return this.#id === other.id;
+  }
+
+  isComposed(): boolean {
+    return this.#season !== undefined && this.#episode !== undefined;
   }
 
   toString(): string {

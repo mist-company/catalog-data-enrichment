@@ -1,5 +1,4 @@
 import { container } from 'tsyringe';
-import { DatabaseHelper } from './helper/database.helper';
 import { DatabaseTitleGateway } from './gateway/title/database-title.gateway';
 import { DatabaseTorrentGateway } from './gateway/torrent/database-torrent.gateway';
 import { HttpTorrentGateway } from './gateway/torrent/http-torrent.gateway';
@@ -12,6 +11,7 @@ import {
   BaseSearchableTorrentGateway,
   BaseTorrentGateway,
 } from './gateway/torrent/base-torrent.gateway';
+import { DatabaseHelper } from './helper/database.helper';
 
 export const dependencies = container
   .register(LoggerHelperMeta, { useValue: {} })

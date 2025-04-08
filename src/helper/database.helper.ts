@@ -1,10 +1,10 @@
 import { MongoClient } from 'mongodb';
 import { DB_NAME, DB_URL } from '../config';
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import { LoggerHelper } from './logger/logger.helper';
 import { BaseLoggerHelper } from './logger/base-logger.helper';
 
-@injectable()
+@singleton()
 export class DatabaseHelper {
   readonly #client: MongoClient;
   readonly #logger: LoggerHelper;
@@ -21,7 +21,6 @@ export class DatabaseHelper {
       this.#isConnected = true;
       this.#logger.debug({ collectionName }, 'connected to database');
     }
-    this.#logger.debug({ collectionName }, 'getting collection');
     return this.#client.db(DB_NAME).collection(collectionName);
   }
 

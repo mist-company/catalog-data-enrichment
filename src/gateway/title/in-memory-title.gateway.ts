@@ -1,5 +1,5 @@
 import { Title } from '../../dto/title';
-import { TitleIdValueObject } from '../../value-object/title-id.vo';
+import { IdValueObject } from '../../value-object/id.value-object';
 import { BaseTitleGateway } from './base-title.gateway';
 
 export class InMemoryTitleGateway implements BaseTitleGateway {
@@ -14,7 +14,7 @@ export class InMemoryTitleGateway implements BaseTitleGateway {
     }
   }
 
-  async get({ imdbId }: { imdbId: TitleIdValueObject }): Promise<Title | null> {
+  async get({ imdbId }: { imdbId: IdValueObject }): Promise<Title | null> {
     const title = this.#titles.find((t) => t._id.isEqual(imdbId));
     return title ?? null;
   }

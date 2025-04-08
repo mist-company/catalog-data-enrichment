@@ -1,11 +1,11 @@
 import { Title } from '../../dto/title';
-import { TitleIdValueObject } from '../../value-object/title-id.vo';
+import { IdValueObject } from '../../value-object/id.value-object';
 import { InMemoryTitleGateway } from './in-memory-title.gateway';
 
 describe('InMemoryTitleGateway', () => {
   it('inserts a titlte', async () => {
     const titleGateway = new InMemoryTitleGateway();
-    const titleId = new TitleIdValueObject('tt000000');
+    const titleId = new IdValueObject('tt000000');
     const title: Title = {
       _id: titleId,
       primaryTitle: 'Test Title',
@@ -24,7 +24,7 @@ describe('InMemoryTitleGateway', () => {
 
   it('updates a title', async () => {
     const titleGateway = new InMemoryTitleGateway();
-    const titleId = new TitleIdValueObject('tt000000');
+    const titleId = new IdValueObject('tt000000');
     const title: Title = {
       _id: titleId,
       primaryTitle: 'Test Title',
@@ -45,14 +45,14 @@ describe('InMemoryTitleGateway', () => {
 
   it('returns null for non-existent title', async () => {
     const titleGateway = new InMemoryTitleGateway();
-    const titleId = new TitleIdValueObject('tt000000');
+    const titleId = new IdValueObject('tt000000');
     const result = await titleGateway.get({ imdbId: titleId });
     expect(result).toBeNull();
   });
 
   it('returns a title with the same id', async () => {
     const titleGateway = new InMemoryTitleGateway();
-    const titleId = new TitleIdValueObject('tt000000');
+    const titleId = new IdValueObject('tt000000');
     const title: Title = {
       _id: titleId,
       primaryTitle: 'Test Title',

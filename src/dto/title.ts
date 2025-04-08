@@ -1,7 +1,7 @@
-import { TitleIdValueObject } from '../value-object/title-id.vo';
+import { IdValueObject } from '../value-object/id.value-object';
 
 export interface Title {
-  _id: TitleIdValueObject;
+  _id: IdValueObject;
   endYear: number | null;
   genres: string[];
   isAdult: boolean;
