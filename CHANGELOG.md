@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/strmplus/catalog-data-enrichment/compare/v0.1.4...v0.1.5) (2025-04-08)
+
+
+### ✨ Features
+
+* add similarity score to avoid errors with torrent titles ([413d57e](https://github.com/strmplus/catalog-data-enrichment/commit/413d57e2ee777e56595de438a908d2cde841a9de))
+* increase similarity threshold value to 0.8 ([cf4e50e](https://github.com/strmplus/catalog-data-enrichment/commit/cf4e50e267b642dc41b937f7e1bb02ed795e75b3))
+
 ### [0.1.4](https://github.com/strmplus/catalog-data-enrichment/compare/v0.1.3...v0.1.4) (2025-04-08)
 
 
