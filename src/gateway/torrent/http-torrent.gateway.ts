@@ -67,6 +67,7 @@ export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
         sizeBytes: item.Size,
         seeds: item.Seeders,
         peers: item.Peers,
+        similarityScore: 0,
       };
     });
   }

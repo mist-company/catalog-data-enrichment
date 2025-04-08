@@ -9,6 +9,7 @@ import { IdValueObject } from '../value-object/id.value-object';
 import { inject, injectable } from 'tsyringe';
 import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
 import { TorrentHelper } from '../helper/torrent.helper';
+import { TextHelper } from '../helper/text.helper';
 
 export type FindTorrentsUseCaseInput = {
   imdbId: string;
@@ -48,7 +49,7 @@ export class FindTorrentsUseCase {
     const category = this.buildCategory(title.titleType);
     Object.assign(loggerPayload, { queries, category });
     this.#logger.info(loggerPayload, 'search torrents');
-    const torrents = (
+    let torrents = (
       await Promise.all(
         queries.map((query) => this.#searchableTorrentGateway.search(query, category)),
       )
@@ -57,11 +58,14 @@ export class FindTorrentsUseCase {
       this.#logger.info(loggerPayload, 'no torrents found');
       return [];
     }
+    torrents = torrents.map((torrent) => ({
+      ...torrent,
+      imdbId,
+      similarityScore: this.calcSimilarity(torrent, queries),
+    }));
     Object.assign(loggerPayload, { torrents: torrents.length });
     await Promise.all(
-      torrents.map((torrent) =>
-        this.#torrentGateway.update({ ...torrent, imdbId }, { upsert: true }),
-      ),
+      torrents.map((torrent) => this.#torrentGateway.update({ ...torrent }, { upsert: true })),
     );
     this.#logger.info(loggerPayload, 'torrents results');
     return torrents;
@@ -72,5 +76,13 @@ export class FindTorrentsUseCase {
       return BaseSearchableTorrentGatewayGategory.TV_SERIES;
     }
     return BaseSearchableTorrentGatewayGategory.MOVIE;
+  }
+
+  private calcSimilarity(torrent: Torrent, queries: string[]): number {
+    const sanitizedTorrentTitle = TorrentHelper.extractCleanTitle(torrent.title);
+    const similarities = queries.map((query) => {
+      return TextHelper.calcSimilarity(sanitizedTorrentTitle, query);
+    });
+    return Math.max(...similarities);
   }
 }

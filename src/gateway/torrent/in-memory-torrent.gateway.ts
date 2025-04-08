@@ -3,11 +3,20 @@ import {
   BaseSearchableTorrentGateway,
   BaseSearchableTorrentGatewayGategory,
   BaseTorrentGateway,
+  BaseTorrentGatewayListInput,
   BaseTorrentGatewayUpdateOptions,
 } from './base-torrent.gateway';
 
 export class InMemoryTorrentGateway implements BaseTorrentGateway, BaseSearchableTorrentGateway {
   torrents: Torrent[] = [];
+
+  async get(input: { infoHash: string }): Promise<Torrent> {
+    const torrent = this.torrents.find((t) => t.infoHash === input.infoHash);
+    if (!torrent) {
+      throw new Error(`Torrent not found with infoHash: ${input.infoHash}`);
+    }
+    return Promise.resolve(torrent);
+  }
 
   async update(
     torrent: Torrent,
@@ -39,5 +48,18 @@ export class InMemoryTorrentGateway implements BaseTorrentGateway, BaseSearchabl
         return titleCategory === category;
       }),
     );
+  }
+
+  async list(input: BaseTorrentGatewayListInput): Promise<Torrent[]> {
+    const torrents = this.torrents.filter((torrent) => {
+      if (input.imdbId && torrent.imdbId.isEqual(input.imdbId)) {
+        return false;
+      }
+      if (input.infoHash && torrent.infoHash !== input.infoHash) {
+        return false;
+      }
+      return true;
+    });
+    return Promise.resolve(torrents);
   }
 }

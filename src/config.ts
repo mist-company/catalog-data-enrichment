@@ -9,3 +9,4 @@ export const FIND_TORRENT_JOB_NAME = process.env.FIND_TORRENT_JOB_NAME ?? 'find-
 export const CATALOG_ENRICHMENT_QUEUE_NAME =
   process.env.CATALOG_ENRICHMENT_QUEUE_NAME ?? 'catalog-enrichment-queue-local';
 export const WORKER_CONCURRENCY = parseInt(process.env.WORKER_CONCURRENCY ?? '300', 10);
+export const SIMILARITY_THRESHOLD = parseFloat(process.env.SIMILARITY_THRESHOLD ?? '0.7');

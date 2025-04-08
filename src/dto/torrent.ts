@@ -9,4 +9,5 @@ export type Torrent = {
   sizeBytes: number;
   seeds: number;
   peers: number;
+  similarityScore: number;
 };

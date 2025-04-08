@@ -24,21 +24,16 @@ export class IdValueObject {
     return this.#episode;
   }
 
-  toJSON(): object {
-    return {
-      id: this.#id,
-      season: this.#season,
-      episode: this.#episode,
-      fullId: this.#fullId,
-    };
-  }
-
   isEqual(other: IdValueObject): boolean {
     return this.#id === other.id;
   }
 
   isComposed(): boolean {
     return this.#season !== undefined && this.#episode !== undefined;
+  }
+
+  toJSON(): string {
+    return this.#fullId;
   }
 
   toString(): string {

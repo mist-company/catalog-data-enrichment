@@ -28,9 +28,7 @@ const findTorrentsUseCase = dependencies.resolve(FindTorrentsUseCase);
 
 app.get('/api/torrents/:imdbId', async (req: Request, res: Response) => {
   try {
-    const torrents = await findTorrentsUseCase.execute({
-      imdbId: req.params.imdbId,
-    });
+    const torrents = await findTorrentsUseCase.execute({ imdbId: req.params.imdbId });
     res.json(torrents);
   } catch (err) {
     if (err instanceof ValidationError) {
