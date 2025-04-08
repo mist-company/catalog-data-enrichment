@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/strmplus/catalog-data-enrichment/compare/v0.1.3...v0.1.4) (2025-04-08)
+
+
+### ♻️ Code Refactoring
+
+* improve logs ([c17cd80](https://github.com/strmplus/catalog-data-enrichment/commit/c17cd80cba5f72cf22229dceb42775a6cb156442))
+* improve torrent search queries ([c245a97](https://github.com/strmplus/catalog-data-enrichment/commit/c245a97b7f355a3380d501d62ff7b3df3da87c2e))
+
 ### [0.1.3](https://github.com/strmplus/catalog-data-enrichment/compare/v0.1.2...v0.1.3) (2025-04-06)
 
 

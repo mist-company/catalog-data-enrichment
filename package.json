@@ -1,9 +1,10 @@
 {
   "name": "catalog-data-enrichment",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "main": "dist/main.ts",
   "scripts": {
     "start:dev": "nodemon -r dotenv/config --exec ts-node src/main.ts | pino-pretty",
+    "script:find-all-torrents": "ts-node src/scripts/find-all-torrents.ts | pino-pretty",
     "build": "tsc",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
