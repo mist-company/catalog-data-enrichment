@@ -1,5 +1,13 @@
+import * as ppt from 'parse-torrent-title';
 import { Title } from '../dto/title';
 import { ValidationError } from '../errors/validation-error';
+
+type ParseTorrentTitleOutput = {
+  title: string;
+  year?: number;
+  episode?: number;
+  season?: number;
+};
 
 export class TorrentHelper {
   static buildQueriesFromTitle(title: Title, episode?: Title): string[] {
@@ -25,27 +33,8 @@ export class TorrentHelper {
     return [...new Set(queries)];
   }
 
-  static extractCleanTitle(torrentName: string): string {
-    const cleaned = torrentName
-      .replace(/\.[^.]+$/, '') // remove extensão
-      .replace(/[._-]/g, ' ') // normaliza separadores
-      .replace(/\s+/g, ' ') // normaliza espaços
-      .trim();
-
-    const balanced = cleaned.replace(/^\(+/, '').replace(/\)+$/, '').trim();
-
-    const seriesMatch = balanced.match(/^(.*?)(?:\s+)?S(\d{2})E(\d{2})/i);
-    if (seriesMatch) {
-      const [, rawTitle, seasonStr, episodeStr] = seriesMatch;
-      return `${rawTitle.trim()} S${seasonStr}E${episodeStr}`;
-    }
-
-    const movieMatch = balanced.match(/^(.*?)\s*(?:\(|\[)?(19\d{2}|20\d{2})(?:\)|\])?/);
-    if (movieMatch) {
-      const [, rawTitle, yearStr] = movieMatch;
-      return `${rawTitle.trim()} ${yearStr}`;
-    }
-
-    return `${balanced}`;
+  static parseTorrentTitle(torrentTitle: string): ParseTorrentTitleOutput {
+    const { title, year, season, episode } = ppt.parse(torrentTitle);
+    return { title, year, episode, season };
   }
 }

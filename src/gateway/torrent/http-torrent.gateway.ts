@@ -7,6 +7,8 @@ import {
 } from './base-torrent.gateway';
 import { LoggerHelper } from '../../helper/logger/logger.helper';
 import { BaseLoggerHelper } from '../../helper/logger/base-logger.helper';
+import { TorrentHelper } from '../../helper/torrent.helper';
+import { TextHelper } from '../../helper/text.helper';
 
 type JackettResponseItem = {
   Title: string;
@@ -53,7 +55,12 @@ export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
         return this.#mapJackettResponse(item);
       }),
     );
-    torrents = torrents.filter((t) => t.infoHash);
+    torrents = torrents
+      .filter((t) => t.infoHash)
+      .map((torrent) => ({
+        ...torrent,
+        similarityScore: this.#calcSimilarity(torrent.title, query, category),
+      }));
     this.#logger.debug(
       {
         query,
@@ -82,5 +89,30 @@ export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
       peers: item.Peers,
       similarityScore: 0,
     };
+  }
+
+  #calcSimilarity(
+    torrentTitle: string,
+    query: string,
+    category: BaseSearchableTorrentGatewayGategory,
+  ): number {
+    const torrentExtracted = TorrentHelper.parseTorrentTitle(torrentTitle);
+    const queryExtracted = TorrentHelper.parseTorrentTitle(query);
+    if (category === BaseSearchableTorrentGatewayGategory.TV_SERIES) {
+      if (
+        torrentExtracted.season !== queryExtracted.season ||
+        torrentExtracted.episode !== queryExtracted.episode
+      ) {
+        return 0;
+      }
+      return TextHelper.calcSimilarity(
+        `${torrentExtracted.title} S${torrentExtracted.season}E${torrentExtracted.episode}`,
+        `${queryExtracted.title} S${queryExtracted.season}E${queryExtracted.episode}`,
+      );
+    }
+    return TextHelper.calcSimilarity(
+      `${torrentExtracted.title} ${torrentExtracted.year}`,
+      `${queryExtracted.title} ${queryExtracted.year}`,
+    );
   }
 }

@@ -9,7 +9,6 @@ import { IdValueObject } from '../value-object/id.value-object';
 import { inject, injectable } from 'tsyringe';
 import { BaseLoggerHelper } from '../helper/logger/base-logger.helper';
 import { TorrentHelper } from '../helper/torrent.helper';
-import { TextHelper } from '../helper/text.helper';
 import { SIMILARITY_THRESHOLD } from '../config';
 
 export type FindTorrentsUseCaseInput = {
@@ -56,13 +55,8 @@ export class FindTorrentsUseCase {
       )
     ).flat();
     torrents = torrents
-      .map((torrent) => ({
-        ...torrent,
-        imdbId,
-        similarityScore: this.calcSimilarity(torrent, queries),
-      }))
+      .map((torrent) => ({ ...torrent, imdbId }))
       .filter((torrent) => torrent.similarityScore >= SIMILARITY_THRESHOLD);
-
     if (!torrents.length) {
       this.#logger.info(loggerPayload, 'no torrents found');
       return [];
@@ -80,13 +74,5 @@ export class FindTorrentsUseCase {
       return BaseSearchableTorrentGatewayGategory.TV_SERIES;
     }
     return BaseSearchableTorrentGatewayGategory.MOVIE;
-  }
-
-  private calcSimilarity(torrent: Torrent, queries: string[]): number {
-    const sanitizedTorrentTitle = TorrentHelper.extractCleanTitle(torrent.title);
-    const similarities = queries.map((query) => {
-      return TextHelper.calcSimilarity(sanitizedTorrentTitle, query);
-    });
-    return Math.max(...similarities);
   }
 }
