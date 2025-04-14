@@ -32,14 +32,28 @@ export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
   }
 
   async search(query: string, category: BaseSearchableTorrentGatewayGategory): Promise<Torrent[]> {
-    const jackettUrl = this.buildJackettUrl();
+    const jackettUrl = this.#buildJackettUrl();
     jackettUrl.searchParams.append('query', query);
     if (category !== BaseSearchableTorrentGatewayGategory.UNKNOWN) {
       jackettUrl.searchParams.append('category', this.#categories[category]);
     }
     const res = await fetch(jackettUrl);
     const { Results: data }: { Results?: JackettResponseItem[] } = await res.json();
-    const torrents = this.mapJackettResponse(data);
+    let torrents = await Promise.all(
+      data.map(async (item) => {
+        if (!item.InfoHash && item.Link) {
+          const res = await fetch(item.Link, { redirect: 'manual' });
+          const magnetUri = res.headers.get('location');
+          if (magnetUri) {
+            const infoHash = magnetUri.match(/btih:([a-zA-Z0-9]+)/)?.[1];
+            item.InfoHash = infoHash;
+            item.MagnetUri = magnetUri;
+          }
+        }
+        return this.#mapJackettResponse(item);
+      }),
+    );
+    torrents = torrents.filter((t) => t.infoHash);
     this.#logger.debug(
       {
         query,
@@ -51,24 +65,22 @@ export class HttpTorrentGateway implements BaseSearchableTorrentGateway {
     return torrents;
   }
 
-  private buildJackettUrl(): URL {
+  #buildJackettUrl(): URL {
     const jackettUrl = new URL('/api/v2.0/indexers/all/results', JACKETT_URL);
     jackettUrl.searchParams.append('apikey', process.env.JACKETT_API_KEY);
     return jackettUrl;
   }
 
-  private mapJackettResponse(response: JackettResponseItem[]): Torrent[] {
-    return response.map((item) => {
-      return {
-        tracker: item.Tracker,
-        title: item.Title,
-        infoHash: item.InfoHash,
-        magnetUri: item.MagnetUri,
-        sizeBytes: item.Size,
-        seeds: item.Seeders,
-        peers: item.Peers,
-        similarityScore: 0,
-      };
-    });
+  #mapJackettResponse(item: JackettResponseItem): Torrent {
+    return {
+      tracker: item.Tracker,
+      title: item.Title,
+      infoHash: item.InfoHash,
+      magnetUri: item.MagnetUri,
+      sizeBytes: item.Size,
+      seeds: item.Seeders,
+      peers: item.Peers,
+      similarityScore: 0,
+    };
   }
 }
